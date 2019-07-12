@@ -368,11 +368,11 @@ MIT
 
 @angular/material/snack-bar
 
+@angular/material/icon
+
 @angular/material/core
 
 @angular/material/list
-
-@angular/material/icon
 
 @angular/material/sidenav
 

@@ -10,14 +10,16 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { IosInstallComponent } from './ios-install/ios-install.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { NgQrScannerModule } from 'angular2-qrscanner';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    IosInstallComponent
+    IosInstallComponent,
   ],
   imports: [
     BrowserModule,
@@ -25,7 +27,7 @@ import { NgQrScannerModule } from 'angular2-qrscanner';
     BrowserAnimationsModule,
     MaterialModule,
     FlexLayoutModule,
-    NgQrScannerModule,
+    ZXingScannerModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],

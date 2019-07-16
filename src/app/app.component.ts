@@ -5,11 +5,12 @@ import {
   Output, 
   OnInit,
   ViewChild,
-  ViewEncapsulation} from '@angular/core';
+  ViewEncapsulation,VERSION} from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { MatSidenav, MatSnackBar, MatSnackBarRef } from '@angular/material';
 import { IosInstallComponent } from './ios-install/ios-install.component';
 import { QrScannerComponent } from 'angular2-qrscanner';
+
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,8 @@ import { QrScannerComponent } from 'angular2-qrscanner';
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit{
+
+ 
   title = 'Material PWA';
   mobileQuery: MediaQueryList;
   nav = [
@@ -57,34 +60,8 @@ export class AppComponent implements OnInit{
         panelClass: ['mat-elevation-z3'] 
       });
     }
+   
 
-    this.qrScannerComponent.getMediaDevices().then(devices => {
-      console.log(devices);
-      const videoDevices: MediaDeviceInfo[] = [];
-      for (const device of devices) {
-          if (device.kind.toString() === 'videoinput') {
-              videoDevices.push(device);
-          }
-      }
-      if (videoDevices.length > 0){
-          let choosenDev;
-          for (const dev of videoDevices){
-              if (dev.label.includes('front')){
-                  choosenDev = dev;
-                  break;
-              }
-          }
-          if (choosenDev) {
-              this.qrScannerComponent.chooseCamera.next(choosenDev);
-          } else {
-              this.qrScannerComponent.chooseCamera.next(videoDevices[0]);
-          }
-      }
-  });
-
-  this.qrScannerComponent.capturedQr.subscribe(result => {
-      console.log(result);
-  });
   }
   
   toggleMobileNav(nav: MatSidenav) {
@@ -93,4 +70,5 @@ export class AppComponent implements OnInit{
     }
   }
 
+ 
 }

@@ -12,6 +12,7 @@ import Drilldown from 'highcharts/modules/drilldown';
 Drilldown(Highcharts);
 // Load the exporting module.
 import Exporting from 'highcharts/modules/exporting';
+import { Stat } from '../model/stat';
 // Initialize exporting module.
 Exporting(Highcharts);
 
@@ -23,75 +24,16 @@ Exporting(Highcharts);
 export class DashboardComponent implements OnInit {
 
   @ViewChild("container", { read: ElementRef }) container: ElementRef;
-   // Pie
-   public pieChartOptions: ChartOptions = {
-    responsive: true,
-  };
+
   public pieChartLabels: Label[] = ['Metro', 'Long Route', 'Short Route'];
   public pieChartData: SingleDataSet = [300, 500, 100];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;
   public pieChartPlugins = [];
-  public approvalStatusList: Status[]=[];
-
-  constructor(private bussPassService:BusspassService) {
-    monkeyPatchChartJsTooltip();
-    monkeyPatchChartJsLegend();
-  }
-
-  ngOnInit() {
-   
-    let approver: Approver ={ApproverName:'',count:0 };
-    let status:Status ={ ApprovalStatus: '', count: 0, approverNames:[approver]};
-    this.bussPassService.processJson().subscribe( (res: OrderStatus[]) => { 
-     for(let i =0;i<res.length;i++){
-        console.log('approval status ',res[i].ApprovalStatus);
-        console.log('approval name',res[i].ApproverName); 
-        if(this.approvalStatusList.length!=0){
-          let index = this.approvalStatusList.findIndex(item => item.ApprovalStatus == res[i].ApprovalStatus);
-          if(index !=-1){ 
-            status.ApprovalStatus =this.approvalStatusList[index].ApprovalStatus;
-            status.count = this.approvalStatusList[index].count+1;
-            status.approverNames = this.approvalStatusList[index].approverNames;
-            status.approverNames = this.construchApproverNames(res[i].ApproverName,status.approverNames);
-            //this.approvalStatus[index] = status;
-            this.approvalStatusList.splice(index, 1);//remove element from array
-            this.approvalStatusList.push({
-              ApprovalStatus : status.ApprovalStatus,
-              count : status.count,
-              approverNames : status.approverNames
-            });
-            console.log('index position at thia point' ,this.approvalStatusList[index]);
-            console.log('index ',index, 'status',res[i].ApprovalStatus);
-            console.log('status', status);
-            console.log('approval status ',this.approvalStatusList);
-          }else{
-            this.approvalStatusList.push(
-              {
-                ApprovalStatus: res[i].ApprovalStatus,
-                count:1,
-                approverNames :[{ApproverName: res[i].ApproverName,count : 1}]
-              });
-          }
-        }else{
-   
-          this.approvalStatusList.push(
-            {
-              ApprovalStatus: res[i].ApprovalStatus,
-              count:1,
-              approverNames : [{ApproverName: res[i].ApproverName,count : 1}]
-            });
-            // this.construchApproverNames(res[i].ApprovalStatus);
-        }
-      // 
-      
-     } 
-     console.log('approval status ',this.approvalStatusList);
-     console.log('approval names ', this.approvalStatusList.length > 0 ? this.approvalStatusList[0].approverNames : []);
-  });
-
-  Highcharts.chart(this.container.nativeElement, {
-    // Created pie chart using Highchart
+  public approvalStatusList: Status[]=[]; 
+  public updateFlag : Boolean = true;
+  public apprStatus : Stat[] = [];
+  public options: any = {
     chart: {
       type: 'pie',
       options3d: {
@@ -116,26 +58,27 @@ export class DashboardComponent implements OnInit {
       pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
     },
     series: [{
-      name: 'Operating Systems',
-      data:  this.approvalStatusList[0].approverNames
-    //   (function () {
-    //     // generate an array of random data
-    //     var data = [],i;
-    //     for (i = 0; i <= this.approvalStatusList.length; i += 1) {
-    //        data.push({
-    //           name: this.approvalStatusList[i].ApprovalStatus,
-    //           y: this.approvalStatusList[i].count
-    //        });
-    //     }
-    //     return data;
-    //  }())   
+      name: 'Approval Status',
+      data: [
+        {
+          name: 'Windows',
+          y: 88.19,
+          drilldown: 'Awaiting Approval Status'
+        },
+        ['MacOSX', 9.22],
+        ['Linux', 1.58],
+        ['Others', 1.01]
+      ]
     }],
     drilldown: {
       series: [{
-        name: 'Windows versions',
-        id: 'windows-versions',
+        name: 'Awaiting Approval Status',
+        id: 'Awaiting Approval Status',
         data: [
-          ['Win 7', 55.03],
+          {
+            name: 'Win 7',
+            y :  55.03
+          },
           ['Win XP', 15.83],
           ['Win Vista', 3.59],
           ['Win 8', 7.56],
@@ -143,34 +86,128 @@ export class DashboardComponent implements OnInit {
         ]
       }]
     }
-  })
+  }
+  constructor(private bussPassService:BusspassService) {
+    monkeyPatchChartJsTooltip();
+    monkeyPatchChartJsLegend();
+  }
+
+  ngOnInit() {
+
+    console.log('options initially ',this.options);
+    Highcharts.chart(this.container.nativeElement, this.options);
+    let approver: Approver ={name:'',y:0 };
+    let status:Status ={ ApprovalStatus: '', count: 0, approverNames:[approver]};
+    this.bussPassService.processJson().subscribe( (res: OrderStatus[]) => { 
+     for(let i =0;i<res.length;i++){
+        console.log('approval status ',res[i].ApprovalStatus);
+        console.log('approval name',res[i].ApproverName); 
+        if(this.approvalStatusList.length!=0){
+          let index = this.approvalStatusList.findIndex(item => item.ApprovalStatus == res[i].ApprovalStatus);
+          if(index !=-1){ 
+            status.ApprovalStatus =this.approvalStatusList[index].ApprovalStatus;
+            status.count = this.approvalStatusList[index].count+1;
+            status.approverNames = this.approvalStatusList[index].approverNames;
+            status.approverNames = this.construchApproverNames(res[i].ApproverName,status.approverNames);
+            //this.approvalStatus[index] = status;
+            this.approvalStatusList.splice(index, 1);//remove element from array
+            this.approvalStatusList.push({
+              ApprovalStatus : status.ApprovalStatus,
+              count : status.count,
+              approverNames : status.approverNames
+            });
+            this.apprStatus.splice(index,1)
+            this.apprStatus.push({
+              name : status.ApprovalStatus,
+              y : status.count,
+            });
+
+            console.log('index position at thia point' ,this.approvalStatusList[index]);
+            console.log('index ',index, 'status',res[i].ApprovalStatus);
+            console.log('status', status);
+            console.log('approval status ',this.approvalStatusList);
+          }else{
+            this.approvalStatusList.push(
+              {
+                ApprovalStatus: res[i].ApprovalStatus,
+                count:1,
+                approverNames :[{name: res[i].ApproverName,y : 1}]
+              });
+              this.apprStatus.push({
+                name : status.ApprovalStatus,
+                y : status.count,
+              });
+          }
+        }else{
+   
+          this.approvalStatusList.push(
+            {
+              ApprovalStatus: res[i].ApprovalStatus,
+              count:1,
+              approverNames : [{name: res[i].ApproverName,y : 1}]
+            });
+            this.apprStatus.push({
+              name : status.ApprovalStatus,
+              y : status.count,
+            });
+         
+            // this.construchApproverNames(res[i].ApprovalStatus);
+        }
+      // 
+     
+     } 
+
+   //  console.log('dasfdsa   -----------',this.approvalStatusList[0].approverNames);
+
+     for(let i = 0 ; i< this.approvalStatusList.length;i++){
+       this.options.series[0]['data'][i].drilldown = this.approvalStatusList[i].ApprovalStatus+' Status';
+       console.log('drill down   -----------',this.options.series[0]['data'][i].drilldown);
+      // console.log('in the for loop ',  this.options.series[0]['data'][i].drilldown);
+     }
+     this.options.series[0]['data'] = this.apprStatus;
+     Highcharts.chart(this.container.nativeElement, this.options);
+     this.options.drilldown.series[0]['data'] = this.approvalStatusList[0].approverNames;
+
+     Highcharts.chart(this.container.nativeElement, this.options);
+     console.log('-------------------name ---',  this.options.drilldown.series[0].name);
+     console.log('-------------------id ----',  this.options.drilldown.series[0].id); 
+     console.log('-------------------',  this.options.drilldown.series[0]['data']);
+     console.log('-------------------data .name ----',  this.options.drilldown.series[0]['data'][0].name);
+     console.log('-------------------', this.options.series[0]['data'][1].name);
+     console.log('after ----',this.options);
+     
+     console.log('approval names ', this.approvalStatusList.length > 0 ? this.approvalStatusList[0].approverNames : []);
+  });
+
+  
+ 
   }
  
  construchApproverNames(appName: string,approvalNamesList: Approver[]){
    
-    let name:Approver = {ApproverName :'',count:0};
+    let name:Approver = {name :'',y:0};
   
     if(approvalNamesList.length!=0){
-        let nameindex = approvalNamesList.findIndex(item => item.ApproverName == appName);
+        let nameindex = approvalNamesList.findIndex(item => item.name == appName);
         if(nameindex !=-1){ 
-          name.ApproverName = approvalNamesList[nameindex].ApproverName;
-          name.count = approvalNamesList[nameindex].count+1;
+          name.name = approvalNamesList[nameindex].name;
+          name.y = approvalNamesList[nameindex].y+1;
           approvalNamesList.splice(nameindex, 1);//remove element from array
          approvalNamesList.push({
-            ApproverName: name.ApproverName,
-            count : name.count
+            name: name.name,
+            y : name.y
           });
         }else{
           approvalNamesList.push(
             {
-              ApproverName: appName,
-              count:1
+              name: appName,
+              y:1
             });
         }
       }else{
         approvalNamesList.push({
-          ApproverName: appName,
-          count:1
+          name: appName,
+          y:1
         })
       }
       return approvalNamesList;

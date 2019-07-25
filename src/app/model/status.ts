@@ -2,6 +2,6 @@ import { Approver } from './approver';
 
 export class Status {
     ApprovalStatus : string;
-    count : number;
+    count : number; 
     approverNames : Approver[];
 } 

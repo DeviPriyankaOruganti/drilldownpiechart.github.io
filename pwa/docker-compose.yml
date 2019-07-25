@@ -1,9 +1,0 @@
-local:
-  environment:
-    - HOST=localhost
-    - NODE_ENV=local
- 
-  build: /
-    
-  ports:
-    - "8080:8080"

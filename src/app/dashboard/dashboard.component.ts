@@ -97,7 +97,7 @@ export class DashboardComponent implements OnInit {
     console.log('options initially ',this.options);
     Highcharts.chart(this.container.nativeElement, this.options);
     let approver: Approver ={name:'',y:0 };
-    let status:Status ={ ApprovalStatus: '', count: 0, approverNames:[approver]};
+    let status:Status ={ ApprovalStatus: '', count: 0, approverNames:[approver], name:'',id:'',data:[approver],type:''};
     this.bussPassService.processJson().subscribe( (res: OrderStatus[]) => { 
      for(let i =0;i<res.length;i++){
         console.log('approval status ',res[i].ApprovalStatus);
@@ -114,12 +114,17 @@ export class DashboardComponent implements OnInit {
             this.approvalStatusList.push({
               ApprovalStatus : status.ApprovalStatus,
               count : status.count,
-              approverNames : status.approverNames
+              approverNames : status.approverNames,
+              name: status.ApprovalStatus +' Status',
+              id: status.ApprovalStatus+' Status',
+              data: status.approverNames,
+              type:'column'
             });
             this.apprStatus.splice(index,1)
             this.apprStatus.push({
               name : status.ApprovalStatus,
               y : status.count,
+              drilldown : status.ApprovalStatus+' Status'
             });
 
             console.log('index position at thia point' ,this.approvalStatusList[index]);
@@ -131,11 +136,16 @@ export class DashboardComponent implements OnInit {
               {
                 ApprovalStatus: res[i].ApprovalStatus,
                 count:1,
-                approverNames :[{name: res[i].ApproverName,y : 1}]
+                approverNames :[{name: res[i].ApproverName,y : 1}],
+                name: status.ApprovalStatus +' Status',
+              id: status.ApprovalStatus+' Status',
+              data: status.approverNames,
+              type:'column'
               });
               this.apprStatus.push({
                 name : status.ApprovalStatus,
                 y : status.count,
+                drilldown : status.ApprovalStatus+' Status'
               });
           }
         }else{
@@ -144,11 +154,16 @@ export class DashboardComponent implements OnInit {
             {
               ApprovalStatus: res[i].ApprovalStatus,
               count:1,
-              approverNames : [{name: res[i].ApproverName,y : 1}]
+              approverNames : [{name: res[i].ApproverName,y : 1}],
+              name: status.ApprovalStatus +' Status',
+              id: status.ApprovalStatus+' Status',
+              data: status.approverNames,
+              type:'column'
             });
             this.apprStatus.push({
               name : status.ApprovalStatus,
               y : status.count,
+              drilldown : status.ApprovalStatus+' Status'
             });
          
             // this.construchApproverNames(res[i].ApprovalStatus);
@@ -159,22 +174,23 @@ export class DashboardComponent implements OnInit {
 
    //  console.log('dasfdsa   -----------',this.approvalStatusList[0].approverNames);
 
-     for(let i = 0 ; i< this.approvalStatusList.length;i++){
-       this.options.series[0]['data'][i].drilldown = this.approvalStatusList[i].ApprovalStatus+' Status';
-       console.log('drill down   -----------',this.options.series[0]['data'][i].drilldown);
-      // console.log('in the for loop ',  this.options.series[0]['data'][i].drilldown);
-     }
+     this.options.drilldown.series = this.approvalStatusList;
+     //this.options.series[0]['data'][0].drilldown = this.approvalStatusList[0].ApprovalStatus+' Status';
+     console.log('----------options details----------');
+     console.log(this.options.drilldown);
+    
+     console.log('drill down   -----------',this.options.series[0]['data'][0].drilldown);
      this.options.series[0]['data'] = this.apprStatus;
      Highcharts.chart(this.container.nativeElement, this.options);
-     this.options.drilldown.series[0]['data'] = this.approvalStatusList[0].approverNames;
+    // this.options.drilldown.series[0]['data'] = this.approvalStatusList[0].approverNames;
 
      Highcharts.chart(this.container.nativeElement, this.options);
-     console.log('-------------------name ---',  this.options.drilldown.series[0].name);
-     console.log('-------------------id ----',  this.options.drilldown.series[0].id); 
-     console.log('-------------------',  this.options.drilldown.series[0]['data']);
-     console.log('-------------------data .name ----',  this.options.drilldown.series[0]['data'][0].name);
-     console.log('-------------------', this.options.series[0]['data'][1].name);
-     console.log('after ----',this.options);
+    //  console.log('-------------------name ---',  this.options.drilldown.series[0].name);
+    //  console.log('-------------------id ----',  this.options.drilldown.series[0].id); 
+    //  console.log('---------------drilldown data----',  this.options.drilldown.series[0]['data']);
+    //  console.log('-------------------data .name ----',  this.options.drilldown.series[0]['data'][0].name);
+    //  console.log('-------------------', this.options.series[0]['data'][1].name);
+    //  console.log('after ----',this.options);
      
      console.log('approval names ', this.approvalStatusList.length > 0 ? this.approvalStatusList[0].approverNames : []);
   });

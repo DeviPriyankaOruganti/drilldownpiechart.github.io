@@ -16,6 +16,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { ChartsModule } from 'ng2-charts';
 import { HttpClientModule } from '@angular/common/http';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { LeadtimeComponent } from './leadtime/leadtime.component';
+import * as $ from 'jquery';
 
 
 
@@ -24,7 +26,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     AppComponent,
     HomeComponent,
     IosInstallComponent,
-    DashboardComponent
+    DashboardComponent,
+    LeadtimeComponent
   ],
   imports: [
     BrowserModule,

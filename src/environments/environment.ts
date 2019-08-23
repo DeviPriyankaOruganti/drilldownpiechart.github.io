@@ -6,7 +6,8 @@ import { Environment } from './environment.i';
 
 export const environment :Environment = {
   production: false,
-  api: 'https://bp.ocp.got.volvo.net/bp'
+  //api: 'http://localhost:3000/data'
+  api: 'http://orderstatus-qa.ocp.got.volvo.net/awaiting/getOrderStyatus',
 };
 
 /*

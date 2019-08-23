@@ -21,13 +21,13 @@ import { IosInstallComponent } from './ios-install/ios-install.component';
 export class AppComponent implements OnInit{
 
  
-  title = 'VOLVO-Bus Pass Admin';
+  title = 'Order Status';
   mobileQuery: MediaQueryList;
   nav = [
-    {
-      'title': 'Home',
-      'path': '/'
-    },
+    // {
+    //   'title': 'Home',
+    //   'path': '/'
+    // },
     {
       'title': 'Dashboard',
       'path': '/dashboard'

@@ -8,4 +8,5 @@ export class Status {
     name:string;
     data: Approver[];
     type:string;
+    days : number;
 } 

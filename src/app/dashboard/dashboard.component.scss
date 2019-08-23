@@ -2,3 +2,14 @@ p {
     font-family: Lato;
   }
  
+  highcharts-button highcharts-drillup-button highcharts-button-normal {
+
+    color: red;
+  }
+
+  #table {
+    border: 1px solid silver;
+    border-radius: 0.5em;
+    padding: 1em;
+    color: green;
+  }
